@@ -2,11 +2,14 @@ use std::io::{self, Write};
 
 use termcolor::{Color, ColorSpec, WriteColor};
 
-use crate::ast::{
+use crate::Format;
+
+use super::ast::{
     BinaryOp, BooleanLiteral, Expression, FloatLiteral, FunctionDeclaration, Identifier,
     IntegerLiteral, NamedFieldDeclaration, Parameter, Program, Statement, StringLiteral,
     StructDeclaration, TupleFieldDeclaration, VariableDeclaration,
 };
+
 
 fn bracket_theme<W>(stdout: &mut W) -> io::Result<()>
 where
@@ -63,12 +66,6 @@ where
             .set_italic(true)
             .set_bold(false),
     )
-}
-
-pub trait Format {
-    fn format<W>(&self, stdout: &mut W, indent: usize, level: usize) -> io::Result<()>
-    where
-        W: Write + WriteColor;
 }
 
 impl Format for Program {

@@ -1,15 +1,19 @@
 use derive_more::{Display, Error, From};
 use logos::{Lexer, Logos};
 
-use crate::{
+use self::{
     ast::{
         BinaryOp, BinaryOperator, Expression, FloatLiteral, FunctionDeclaration, Identifier,
         IntegerLiteral, NamedFieldDeclaration, Parameter, Program, ReturnStatement, Statement,
         StructDeclaration, TupleFieldDeclaration, VariableDeclaration,
     },
     lexer::{LexerError, Token},
-    span::{Span, Spanned},
 };
+use crate::core::span::{Span, Spanned};
+
+mod ast;
+mod lexer;
+mod format;
 
 #[derive(Debug, From, PartialEq, Display, Error)]
 pub enum ParserError {

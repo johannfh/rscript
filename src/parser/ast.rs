@@ -1,6 +1,6 @@
 use derive_more::{Display, From};
 
-use crate::span::{Span, Spanned};
+use crate::core::span::{Span, Spanned};
 
 #[derive(Debug, PartialEq, Clone, From)]
 pub enum Expression {

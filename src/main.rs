@@ -2,16 +2,13 @@ use std::fs;
 extern crate pretty_env_logger;
 #[macro_use]
 extern crate log;
-use format::Format;
+use core::format::Format;
 use termcolor::{ColorChoice, StandardStream};
 
 use crate::parser::Parser;
 
-mod ast;
-mod format;
-mod lexer;
+mod core;
 mod parser;
-mod span;
 
 fn main() -> anyhow::Result<()> {
     pretty_env_logger::init();
@@ -35,7 +32,6 @@ fn main() -> anyhow::Result<()> {
     program.format(&mut stdout, 4, 0)?;
     println!("---ENDING---");
     let print_duration = print_start.elapsed();
-    trace!("PROGRAM: {:#?}", program);
 
     info!("Time taken for parsing: {:?}", parse_duration);
     info!("Time taken for printing: {:?}", print_duration);
