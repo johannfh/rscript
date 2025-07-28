@@ -1,0 +1,19 @@
+struct X;
+
+struct Vector2D(f32, f32);
+
+struct Person {
+    name: String,
+    age: u8,
+}
+
+let x = 5;
+
+let y = x + 2;
+
+let float = 5.125;
+
+fn double(x: int) -> int {
+    return x * 2;
+}
+
