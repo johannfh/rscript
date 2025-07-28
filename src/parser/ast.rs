@@ -144,6 +144,7 @@ impl Spanned for Statement {
 pub struct VariableDeclaration {
     pub identifier: Identifier,
     pub initializer: Expression,
+    // TODO: Add type annotation
     pub span: Span,
 }
 

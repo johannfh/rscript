@@ -1,5 +1,9 @@
 use std::collections::HashMap;
 
+use derive_more::From;
+
+use crate::runtime::Runtime;
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value {
     Int(i64),
@@ -24,6 +28,12 @@ pub struct StructInstance {
 //    pub parameters: Vec<String>,
 //    pub body: Vec<Statement>
 //}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum EnvironmentError {
+    VariableNotFound(String),
+    VariableAlreadyDeclared(String),
+}
 
 /// # Environment
 /// The [`Environment`] struct represents the runtime environment for executing scripts.
@@ -54,7 +64,48 @@ impl Environment {
         Environment { variables }
     }
 
+    /// Returns a reference to the current scope.
+    fn scope(&self) -> &HashMap<String, Value> {
+        self.variables
+            .last()
+            .expect("There should always be at least one scope initialized")
+    }
+
+    /// Returns a mutable reference to the current scope.
+    fn scope_mut(&mut self) -> &mut HashMap<String, Value> {
+        self.variables
+            .last_mut()
+            .expect("There should always be at least one scope initialized")
+    }
+
+    fn push_scope(&mut self) {
+        trace!("Pushing a new scope");
+        self.variables.push(HashMap::new());
+    }
+
+    fn pop_scope(&mut self) {
+        trace!(
+            "Popping the current scope with {} variables",
+            self.scope().len()
+        );
+        if self.variables.len() > 1 {
+            self.variables.pop();
+        } else {
+            warn!("Attempted to pop the last scope, which is not allowed");
+        }
+    }
+
+    /// Declares a new variable in the current scope. Supports shadowing of variables.
+    pub fn declare_variable(&mut self, name: String, value: Value) -> Result<(), EnvironmentError> {
+        trace!("Declaring variable: {}", name);
+        self.scope_mut().insert(name, value);
+        Ok(())
+    }
+
+    /// Gets the value of a variable by its name, searching through all scopes from innermost to
+    /// outermost.
     pub fn get_variable(&self, name: &str) -> Option<&Value> {
+        trace!("Getting variable: {}", name);
         for scope in self.variables.iter().rev() {
             if let Some(value) = scope.get(name) {
                 return Some(value);
@@ -63,11 +114,11 @@ impl Environment {
         None
     }
 
-    pub fn set_variable(&mut self, name: String, value: Value) {
-        let scope = self
-            .variables
-            .last_mut()
-            .expect("There should always be at least one scope initialized");
-        scope.insert(name, value);
+    /// Sets the value of a variable by its name, searching through all scopes from innermost to
+    /// outermost. If the variable is not found, it will return an error.
+    pub fn set_variable(&mut self, name: String, value: Value) -> Result<(), EnvironmentError> {
+        trace!("Setting variable: {} to: {:?}", name, value);
+        self.scope_mut().insert(name, value);
+        Ok(())
     }
 }

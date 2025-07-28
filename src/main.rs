@@ -33,5 +33,7 @@ fn main() -> anyhow::Result<()> {
 
     runtime.execute(&source);
 
+    dbg!(runtime);
+
     Ok(())
 }
