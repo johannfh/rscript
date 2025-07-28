@@ -3,7 +3,9 @@ use std::io::{self, Write};
 use termcolor::{Color, ColorSpec, WriteColor};
 
 use crate::ast::{
-    BinaryOp, BooleanLiteral, Expression, FloatLiteral, FunctionDeclaration, Identifier, IntegerLiteral, NamedFieldDeclaration, Parameter, Program, Statement, StringLiteral, StructDeclaration, TupleFieldDeclaration, VariableDeclaration
+    BinaryOp, BooleanLiteral, Expression, FloatLiteral, FunctionDeclaration, Identifier,
+    IntegerLiteral, NamedFieldDeclaration, Parameter, Program, Statement, StringLiteral,
+    StructDeclaration, TupleFieldDeclaration, VariableDeclaration,
 };
 
 fn bracket_theme<W>(stdout: &mut W) -> io::Result<()>
@@ -209,7 +211,7 @@ impl Format for StructDeclaration {
                 for field in fields {
                     field.format(stdout, indent, level + 1)?;
                 }
-            },
+            }
             StructDeclaration::TupleStruct {
                 identifier,
                 fields,
@@ -229,7 +231,7 @@ impl Format for StructDeclaration {
                 for field in fields {
                     field.format(stdout, indent, level + 1)?;
                 }
-            },
+            }
             StructDeclaration::UnitStruct { identifier, span } => {
                 write!(stdout, "{}", prefix)?;
                 bracket_theme(stdout)?;
@@ -275,7 +277,8 @@ impl Format for NamedFieldDeclaration {
 impl Format for TupleFieldDeclaration {
     fn format<W>(&self, stdout: &mut W, indent: usize, level: usize) -> io::Result<()>
     where
-        W: Write + WriteColor {
+        W: Write + WriteColor,
+    {
         let prefix = " ".repeat(indent * level);
         write!(stdout, "{}", prefix)?;
         bracket_theme(stdout)?;
