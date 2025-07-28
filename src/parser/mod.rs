@@ -11,9 +11,9 @@ use self::{
 };
 use crate::core::span::{Span, Spanned};
 
-mod ast;
-mod lexer;
-mod format;
+pub mod ast;
+pub mod lexer;
+pub mod format;
 
 #[derive(Debug, From, PartialEq, Display, Error)]
 pub enum ParserError {
@@ -115,7 +115,7 @@ impl<'a> Parser<'a> {
 
         let program_end_span = self.current_span().end;
 
-        info!("Successfully parsed program");
+        trace!("Successfully parsed program");
         Ok(Program {
             statements,
             span: Span {

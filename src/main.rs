@@ -1,40 +1,37 @@
-use std::fs;
+#![allow(unused)]
+
+use std::{env::args, fs};
 extern crate pretty_env_logger;
 #[macro_use]
 extern crate log;
 use core::format::Format;
 use termcolor::{ColorChoice, StandardStream};
 
-use crate::parser::Parser;
+use crate::{parser::Parser, runtime::Runtime};
 
 mod core;
 mod parser;
+mod runtime;
 
 fn main() -> anyhow::Result<()> {
     pretty_env_logger::init();
 
-    let input_file_path = "example.rscript";
+    let input_file_path = args()
+        .skip(1)
+        .next()
+        .ok_or(anyhow::anyhow!("No input file provided"))?;
 
-    let source = fs::read_to_string(input_file_path)?;
+    let source = fs::read_to_string(&input_file_path)?;
     info!("Successfully read input file: {}", input_file_path);
 
     println!("---SOURCE---");
     print!("{}", source);
     println!("---ENDING---");
 
-    let parse_start = std::time::Instant::now();
-    let program = Parser::new(&source).parse()?;
-    let parse_duration = parse_start.elapsed();
+    let mut runtime = Runtime::new();
+    info!("Created a new runtime instance");
 
-    let print_start = std::time::Instant::now();
-    println!("---PARSED---");
-    let mut stdout = StandardStream::stdout(ColorChoice::Always);
-    program.format(&mut stdout, 4, 0)?;
-    println!("---ENDING---");
-    let print_duration = print_start.elapsed();
-
-    info!("Time taken for parsing: {:?}", parse_duration);
-    info!("Time taken for printing: {:?}", print_duration);
+    runtime.execute(&source);
 
     Ok(())
 }
