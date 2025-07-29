@@ -7,15 +7,11 @@ use crate::{
         Parser, ParserError,
         ast::{Expression, Program, Statement},
     },
-    runtime::environment::{Environment, EnvironmentError, Value},
 };
-
-mod environment;
 
 #[derive(Debug, From)]
 pub enum RuntimeError {
     ParserError(ParserError),
-    EnvironmentError(EnvironmentError),
 }
 
 /// # Runtime
@@ -31,15 +27,12 @@ pub enum RuntimeError {
 /// runtime.execute("print('Hello, World!')");
 /// ```
 #[derive(Debug, Clone)]
-pub struct Runtime {
-    environment: Environment,
-}
+pub struct Runtime {}
 
 impl Runtime {
     /// Creates a new instance of the `Runtime`.
     pub fn new() -> Self {
-        let environment = Environment::new();
-        Runtime { environment }
+        Runtime {}
     }
 
     /// Executes a script in the runtime environment.
@@ -59,28 +52,8 @@ impl Runtime {
 
         for statement in &program.statements {
             trace!("Executing statement: {:?}", statement);
-            match statement {
-                Statement::VariableDeclaration(decl) => {
-                    trace!("Variable declaration: {:?}", decl.identifier.name);
-                    let name = decl.identifier.name.clone();
-                    let value = self.evaluate_expression(&decl.initializer)?;
-                    self.environment.declare_variable(name, value)?;
-                }
-                _ => error!("Unhandled statement type: {:?}", statement),
-            }
         }
 
         Ok(())
-    }
-
-    pub fn evaluate_expression(&mut self, expression: &Expression) -> Result<Value, RuntimeError> {
-        trace!("Evaluating expression: {:?}", expression);
-        match expression {
-            Expression::IntegerLiteral(value) => {
-                trace!("Integer literal with value: {:?}", value.value);
-                Ok(Value::Int(value.value))
-            }
-            expr => panic!("Unhandled expression type: {:?}", expr),
-        }
     }
 }
